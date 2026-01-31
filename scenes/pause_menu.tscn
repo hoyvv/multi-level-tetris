@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://bni73l8toacm"]
+
+[ext_resource type="Script" uid="uid://c6gbupcn1vpqq" path="res://scripts/ui/pause_menu.gd" id="1_n87rw"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_n87rw")
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 140.0
+offset_top = 231.0
+offset_right = 582.0
+offset_bottom = 846.0
+
+[node name="continue_btn" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 66.0
+offset_top = 140.0
+offset_right = 377.0
+offset_bottom = 242.0
+theme_override_font_sizes/font_size = 25
+text = "continue"
+
+[node name="exit_btn" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 108.0
+offset_top = 274.0
+offset_right = 348.0
+offset_bottom = 366.0
+theme_override_font_sizes/font_size = 22
+text = "exit"
