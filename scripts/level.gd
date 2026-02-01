@@ -15,11 +15,13 @@ const REWARD : int = 100
 const BOARD_ATLAS_ID : int = 0
 const GHOST_ATLAS_ID : int = 1
 
+@onready var tiles_node: Node2D = $Tiles
 @onready var piece_tilelayer : TileMapLayer = $Tiles/Piece
+@onready var next_piece_tilelayer : TileMapLayer = $StaticTiles/NextPiece
 @onready var board_tilelayer : TileMapLayer = $Tiles/Board
 @onready var ghost_tilelayer : TileMapLayer = $Tiles/Ghost
+@onready var lock_timer : Timer = $LockTimer
 @onready var hud : CanvasLayer = $HUD
-@onready var lvl_timer: Timer = $LevelTimer
 
 var game_running : bool = false
 var max_score : int = 0
@@ -31,6 +33,12 @@ var score : int = 0:
 			save_state()
 
 		update_stats_ui()
+
+var lean_tween: Tween 
+var flash_tween: Tween
+
+var last_lean_dir: int = 0
+var original_position: Vector2
 
 var shapes_data : ShapesData = ShapesData.new()
 var remaining_pieces : Array[Array] 
@@ -58,6 +66,8 @@ var timer : int = 60
 #region Node function
 
 func _ready() -> void:
+	lock_timer.timeout.connect(on_timeout_lock_timer)
+
 	SignalBus.toggele_pause.connect(on_toggle_pause)
 	SignalBus.exit.connect(exit)
 	SignalBus.new_game.connect(create_new_game)
@@ -67,11 +77,24 @@ func _ready() -> void:
 
 func _physics_process(_delta: float) -> void:
 	if not game_running:
-		get_tree().paused = true
 		return
 
-	hud.time_left_label.text = "Time left: %s" % int(lvl_timer.time_left)
+	var direction_x: int = int(Input.get_axis("left", "right"))
 
+	handle_movement_input()
+	
+	
+	for i: int in range(steps.size()):
+		if steps[i] >= STEPS_REQ:
+			move_piece(DIRECTIONS[i])
+			steps[i] -= STEPS_REQ
+
+	steps[2] += piece_speed
+	update_ghost_piece()
+	handle_visual_lean(direction_x)
+	update_lock()
+	
+func handle_movement_input() -> void:
 	if Input.is_action_pressed("left"):
 		steps[0] += 10
 
@@ -81,20 +104,13 @@ func _physics_process(_delta: float) -> void:
 	if Input.is_action_pressed("down"):
 		steps[2] += 15
 
-	for i: int in range(steps.size()):
-		if steps[i] >= STEPS_REQ:
-			move_piece(DIRECTIONS[i])
-			steps[i] -= STEPS_REQ
-
-	steps[2] += piece_speed
-	update_ghost_piece()
-
 func _unhandled_input(event: InputEvent) -> void:
 	if not event is InputEventKey:
 		return
 
 	if Input.is_action_just_pressed("space"):
 		move_piece_to(ghost_position)
+		apply_impact(Vector2i.DOWN, 7, 0.05, 0.7)
 		return
 
 	if Input.is_action_just_pressed("up"):
@@ -113,12 +129,12 @@ func setup_pieces() -> void:
 	next_piece_atlas = get_atlas_for(next_piece_type)
 
 func reset_variable() -> void:
-	lvl_timer.wait_time = timer
 	game_running = true
 	score = 0
 	piece_speed = 0.6
 	steps = [0, 0, 0] #0:влево, 1:вправо, 2:вниз
 	remaining_pieces = ShapesData.SHAPES_LIST.duplicate()
+	original_position = tiles_node.position
 
 func reset_display() -> void:
 	clear_piece()
@@ -143,7 +159,7 @@ func create_piece() -> void:
 	piece_size = get_piece_size(piece)
 
 	draw_piece(piece, piece_position, BOARD_ATLAS_ID, piece_atlas, piece_tilelayer) 
-	draw_piece(next_piece_type, Vector2i(31, -2), BOARD_ATLAS_ID, next_piece_atlas, piece_tilelayer) #show next piece
+	draw_piece(next_piece_type, Vector2i(31, -2), 1, next_piece_atlas, next_piece_tilelayer) #show next piece
 	
 func create_next_piece() -> void:
 	piece_type = next_piece_type
@@ -156,8 +172,8 @@ func create_next_piece() -> void:
 	create_piece()
 
 func clear_piece() -> void:
-	for i : Vector2i in piece:
-		piece_tilelayer.erase_cell(piece_position + i)
+	for cell_offset: Vector2i in piece:
+		piece_tilelayer.erase_cell(piece_position + cell_offset)
 
 func draw_piece(cells: Array[Vector2i], pos: Vector2i, id: int, atlas: Vector2i, tilelayer: TileMapLayer) -> void:
 	for cell_offset : Vector2i in cells:
@@ -182,13 +198,29 @@ func rotate_piece() -> void:
 
 func move_piece(direction: Vector2i) -> void:
 
-	if can_move(direction):
+	if can_move(direction, piece_position, board_tilelayer):
 		update_piece_position_in_direction(direction)
 		return
 
-	if direction == Vector2i.DOWN:
-		process_landing()
+func update_lock() -> void:
+	var is_on_floor: bool = not can_move(Vector2i.DOWN, piece_position, board_tilelayer)
+
+	if is_on_floor:
+		if lock_timer.is_stopped():
+			lock_timer.start()
+			set_piece_visual_state(true)
+		
+func set_piece_visual_state(is_locking: bool) -> void:
+	print(1)
+	if flash_tween and flash_tween.is_valid():
+		flash_tween.kill()
 	
+	if is_locking:
+		flash_tween = create_tween()
+		flash_tween.tween_property(piece_tilelayer, "modulate:a", 0.3, lock_timer.wait_time)
+		await flash_tween.finished
+		piece_tilelayer.modulate.a = 1	
+		
 func update_piece_position_in_direction(direction: Vector2i) -> void:
 	clear_piece()
 	piece_position += direction
@@ -200,7 +232,7 @@ func move_piece_to(pos: Vector2i) -> void:
 	draw_piece(piece, piece_position, BOARD_ATLAS_ID, piece_atlas, piece_tilelayer)
 	
 	process_landing()
-	
+
 func update_ghost_piece() -> void:	
 	ghost_position = piece_position
 	ghost_tilelayer.clear()
@@ -214,20 +246,20 @@ func update_ghost_piece() -> void:
 
 #region Validation Methods
 
-func can_move(direction: Vector2i) -> bool:
+func can_move(direction: Vector2i, pos: Vector2i, tilelayer: TileMapLayer) -> bool:
 	for point : Vector2i in piece:
-		if is_free(point + piece_position + direction, board_tilelayer):
+		if not is_free(point + pos + direction, tilelayer):
 			return false
 	return true
 
-func can_fit_at(points: Array[Vector2i], pos: Vector2i, tilelayer: TileMapLayer) -> bool:
-	for point: Vector2i in points:
-		if is_free(point + pos, tilelayer):
+func can_fit_at(cells: Array[Vector2i], pos: Vector2i, tilelayer: TileMapLayer) -> bool:
+	for cell_offset: Vector2i in cells:
+		if not is_free(cell_offset + pos, tilelayer):
 			return false		
 	return true
 
 func is_free(pos: Vector2i, tilelayer: TileMapLayer) -> bool:
-	return tilelayer.get_cell_source_id(pos) != -1
+	return tilelayer.get_cell_source_id(pos) == -1
 
 #endregion
 
@@ -235,30 +267,35 @@ func is_free(pos: Vector2i, tilelayer: TileMapLayer) -> bool:
 
 func check_rows() -> void:
 	var row : int = ROWS
+	var lines_cleared : int = 0
 
 	while row > 0:
 		var count: int = 0
-		for i: int in range(COLS):
-			if is_free(Vector2i(i + 1, row), board_tilelayer):
+		for col: int in range(COLS):
+			if not is_free(Vector2i(col, row), board_tilelayer):
 				count += 1
+
 		if count == COLS:
-			score += REWARD
-			piece_speed += ACCEL
+			lines_cleared += 1
 
 			shift_rows(row)
-			save_state()
 		else:
 			row -= 1
 
+	if lines_cleared > 0:
+		score += calculate_score(lines_cleared)
+		piece_speed += ACCEL
+		apply_impact(Vector2i.DOWN, 25 * lines_cleared, 0.05, 0.5)
+		save_state()
+		
 func shift_rows(row: int) -> void:
 	var atlas: Vector2i
-	for i in range(row, 1, -1):
-		for j in range(COLS):
+	for i: int in range(row, 1, -1):
+		for j: int in range(COLS):
 			atlas = board_tilelayer.get_cell_atlas_coords(Vector2i(j + 1, i - 1))
 
 			if atlas == Vector2i(-1, -1):
 				board_tilelayer.erase_cell(Vector2i(j + 1, i))
-
 			else:
 				board_tilelayer.set_cell(Vector2i(j + 1, i), BOARD_ATLAS_ID, atlas)
 
@@ -270,7 +307,7 @@ func clear_board() -> void:
 func clear_panel() -> void:
 	for i : int in range(30, 35):
 		for j : int in range(-3, 1):
-			piece_tilelayer.erase_cell(Vector2i(i, j))
+			next_piece_tilelayer.erase_cell(Vector2i(i, j))
 
 func land_piece() -> void:
 	for i : Vector2i in piece:
@@ -290,6 +327,53 @@ func process_landing() -> void:
 func game_over() -> void:
 	game_running = false
 	hud.game_over_label.show()
+
+func calculate_score(lines: int, multiplier: int = 1) -> int:
+	var result: int = 0
+	match lines:
+		1: result = REWARD
+		2: result = REWARD * 3
+		3: result = REWARD * 6
+		4: result = REWARD * 8
+	
+	return result * multiplier
+
+func apply_impact(direction: Vector2, intensity: float, start_duration: float, end_duration: float) -> void:
+	var impact_pos: Vector2 = tiles_node.position + (direction * intensity)
+
+	var tween: Tween = create_tween()
+	tween.tween_property(tiles_node, "position", impact_pos, start_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(tiles_node, "position", original_position, end_duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func handle_visual_lean(direction_x: int) -> void:
+	var can_move_now: bool = can_move(Vector2i(direction_x, 0), piece_position, board_tilelayer)
+	var pressing_against_wall: bool = direction_x != 0 and not can_move_now
+	var target_direction: int = direction_x if pressing_against_wall else 0
+
+	if target_direction == last_lean_dir:
+		return
+
+	last_lean_dir = target_direction
+
+	if last_lean_dir:
+		lean_field(last_lean_dir, 3)
+
+	else:
+		return_field()
+
+func lean_field(direction_x: int, lean_amount: int) -> void:
+	if lean_tween and lean_tween.is_valid():
+		lean_tween.kill()
+
+	lean_tween = create_tween()
+	lean_tween.tween_property(tiles_node, "position", original_position + Vector2(direction_x * lean_amount, 0), 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+func return_field() -> void:
+	if lean_tween and lean_tween.is_valid():
+		lean_tween.kill()
+
+	lean_tween = create_tween()
+	lean_tween.tween_property(tiles_node, "position", original_position, 0.3).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 #endregion
 
@@ -328,22 +412,17 @@ func load_state() -> void:
 
 #region Signal handlers
 
-func _on_level_timer_timeout() -> void:
-	hud.win_label.show()
-	game_running = false
-	await get_tree().create_timer(5.0).timeout
-	get_tree().paused = false
-	lvl += 1
-	timer += 30
-	create_new_game()
-
 func on_toggle_pause() -> void:
 	hud.pause_menu.visible = !hud.pause_menu.visible
-	get_tree().paused = !get_tree().paused
 	game_running = !game_running
-	
+	get_tree().paused = !get_tree().paused
+		
 func exit() -> void:
 	get_tree().quit()
+
+func on_timeout_lock_timer() -> void:
+	apply_impact(Vector2i.DOWN, 7, 0.05, 0.5)
+	process_landing()
 
 #endregion
 
@@ -358,10 +437,8 @@ func create_new_game() -> void:
 	
 	ghost_tilelayer.clear()
 	hud.game_over_label.hide()
-	hud.win_label.hide()
 	hud.pause_menu.hide()
-	lvl_timer.start()
-	
+
 	create_piece()
 	
 func update_stats_ui() -> void:

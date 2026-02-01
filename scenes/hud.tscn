@@ -94,23 +94,6 @@ theme_override_font_sizes/font_size = 30
 text = "Max score:"
 vertical_alignment = 1
 
-[node name="TimeLeftLabel" type="Label" parent="."]
-offset_left = 1671.0
-offset_top = 428.0
-offset_right = 1811.0
-offset_bottom = 474.0
-theme_override_font_sizes/font_size = 30
-text = "Time left:"
-vertical_alignment = 1
-
-[node name="WinLabel" type="Label" parent="."]
-offset_left = 887.0
-offset_top = 450.0
-offset_right = 1075.0
-offset_bottom = 505.0
-theme_override_font_sizes/font_size = 40
-text = "YOU WIN!"
-
 [node name="LvlLabel" type="Label" parent="."]
 offset_left = 1738.0
 offset_top = 339.0

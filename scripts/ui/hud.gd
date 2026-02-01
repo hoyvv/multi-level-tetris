@@ -4,10 +4,7 @@ extends CanvasLayer
 @onready var game_over_label: Label = $GameOverLabel
 @onready var score_label: Label = $ScoreLabel
 @onready var max_score_lebel: Label = $MaxScoreLabel
-@onready var time_left_label: Label = $TimeLeftLabel
-@onready var win_label: Label = $WinLabel
 @onready var label_2: Label = $Label2
-@onready var lvl_label: Label = $LvlLabel
 @onready var pause_menu: CanvasLayer = $PauseMenu
 @onready var pause_button: Button = $PauseButton
 
