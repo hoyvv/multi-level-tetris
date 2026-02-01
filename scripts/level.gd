@@ -72,17 +72,14 @@ func _physics_process(_delta: float) -> void:
 
 	hud.time_left_label.text = "Time left: %s" % int(lvl_timer.time_left)
 
-	if Input.is_action_pressed("ui_left"):
+	if Input.is_action_pressed("left"):
 		steps[0] += 10
 
-	elif Input.is_action_pressed("ui_right"):
+	elif Input.is_action_pressed("right"):
 		steps[1] += 10
 
-	if Input.is_action_just_pressed("ui_down"):
-		move_piece_to(ghost_position)
-
-	elif  Input.is_action_just_pressed("ui_up"):
-		rotate_piece()
+	if Input.is_action_pressed("down"):
+		steps[2] += 15
 
 	for i: int in range(steps.size()):
 		if steps[i] >= STEPS_REQ:
@@ -91,6 +88,18 @@ func _physics_process(_delta: float) -> void:
 
 	steps[2] += piece_speed
 	update_ghost_piece()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not event is InputEventKey:
+		return
+
+	if Input.is_action_just_pressed("space"):
+		move_piece_to(ghost_position)
+		return
+
+	if Input.is_action_just_pressed("up"):
+		rotate_piece()
+		return
 
 #endregion
 
@@ -188,10 +197,9 @@ func update_piece_position_in_direction(direction: Vector2i) -> void:
 func move_piece_to(pos: Vector2i) -> void:
 	clear_piece()
 	piece_position = pos
-	draw_piece(piece, pos, BOARD_ATLAS_ID, piece_atlas, piece_tilelayer)
+	draw_piece(piece, piece_position, BOARD_ATLAS_ID, piece_atlas, piece_tilelayer)
 	
-	if not can_move(pos):
-		process_landing()
+	process_landing()
 	
 func update_ghost_piece() -> void:	
 	ghost_position = piece_position
