@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://3c2slnjdbydd"]
+
+[ext_resource type="Script" uid="uid://d3rmlcreapf8q" path="res://scripts/ui/menu.gd" id="1_yqeox"]
+[ext_resource type="PackedScene" uid="uid://c1lsei6acadr2" path="res://scenes/ui/settings.tscn" id="2_vjb58"]
+
+[node name="menu" type="Control" unique_id=1530705074]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+script = ExtResource("1_yqeox")
+
+[node name="Panel" type="Panel" parent="." unique_id=2038002085]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -251.5
+offset_top = -356.0
+offset_right = 251.5
+offset_bottom = 356.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="play_btn" type="Button" parent="Panel" unique_id=96847560]
+layout_mode = 0
+offset_left = 59.0
+offset_top = 203.0
+offset_right = 440.29272
+offset_bottom = 311.0
+theme_override_font_sizes/font_size = 40
+text = "PLAY"
+
+[node name="stngs_btn" type="Button" parent="Panel" unique_id=2037641368]
+layout_mode = 0
+offset_left = 61.0
+offset_top = 325.0
+offset_right = 444.0
+offset_bottom = 424.0
+theme_override_font_sizes/font_size = 40
+text = "SETTINGS"
+
+[node name="exit_btn" type="Button" parent="Panel" unique_id=1512074584]
+layout_mode = 0
+offset_left = 61.0
+offset_top = 439.0
+offset_right = 441.0
+offset_bottom = 530.0
+theme_override_font_sizes/font_size = 40
+text = "EXIT"
+
+[node name="Label" type="Label" parent="Panel" unique_id=1849549863]
+layout_mode = 1
+anchors_preset = 13
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -210.0
+offset_top = 60.0
+offset_right = 210.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 50
+text = "Multi-Level-Tetris"
+
+[node name="Settings" parent="." unique_id=42152329 instance=ExtResource("2_vjb58")]
+visible = false
+layout_mode = 1
+
+[connection signal="pressed" from="Panel/play_btn" to="." method="_on_play_btn_pressed"]
+[connection signal="pressed" from="Panel/stngs_btn" to="." method="_on_stngs_btn_pressed"]
+[connection signal="pressed" from="Panel/exit_btn" to="." method="_on_exit_btn_pressed"]
+[connection signal="pressed" from="Settings/Panel/MarginContainer/VBoxContainer/back_btn" to="." method="_on_back_btn_pressed"]
+
+[editable path="Settings"]

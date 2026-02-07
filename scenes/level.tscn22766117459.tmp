@@ -1,0 +1,99 @@
+[gd_scene load_steps=11 format=4 uid="uid://coqefiv8pudlx"]
+
+[ext_resource type="Script" uid="uid://d2vpt38k82c01" path="res://scripts/level.gd" id="1_w8frs"]
+[ext_resource type="Texture2D" uid="uid://bi3b0kglptqii" path="res://sprites/tile_set.png" id="2_mx8sn"]
+[ext_resource type="Script" uid="uid://cmwoa0kebh8mo" path="res://scripts/grid_visualizer.gd" id="2_ppgk2"]
+[ext_resource type="PackedScene" uid="uid://cq2q4nosptwyn" path="res://scenes/hud.tscn" id="3_ppgk2"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0wfyh"]
+texture = ExtResource("2_mx8sn")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_sgp6g"]
+tile_offset_axis = 1
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_0wfyh")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_w8frs"]
+texture = ExtResource("2_mx8sn")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_w8frs"]
+tile_size = Vector2i(32, 32)
+sources/1 = SubResource("TileSetAtlasSource_w8frs")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mx8sn"]
+texture = ExtResource("2_mx8sn")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ppgk2"]
+tile_size = Vector2i(32, 32)
+sources/1 = SubResource("TileSetAtlasSource_mx8sn")
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_w8frs")
+
+[node name="Tiles" type="Node2D" parent="."]
+position = Vector2(750, 177)
+
+[node name="Board" type="TileMapLayer" parent="Tiles"]
+use_parent_material = true
+tile_map_data = PackedByteArray("AAALABUAAAAHAAAAAAAAABUAAAAHAAAAAAAAAAAAAAAHAAAAAAALAAAAAAAHAAAAAAABAAAAAAAHAAAAAAACAAAAAAAHAAAAAAADAAAAAAAHAAAAAAAEAAAAAAAHAAAAAAAFAAAAAAAHAAAAAAAGAAAAAAAHAAAAAAAHAAAAAAAHAAAAAAAIAAAAAAAHAAAAAAAJAAAAAAAHAAAAAAAKAAAAAAAHAAAAAAAAABQAAAAHAAAAAAAAABMAAAAHAAAAAAAAABIAAAAHAAAAAAAAABEAAAAHAAAAAAAAABAAAAAHAAAAAAAAAA8AAAAHAAAAAAAAAA4AAAAHAAAAAAAAAA0AAAAHAAAAAAAAAAwAAAAHAAAAAAAAAAsAAAAHAAAAAAAAAAoAAAAHAAAAAAAAAAkAAAAHAAAAAAAAAAgAAAAHAAAAAAAAAAcAAAAHAAAAAAAAAAYAAAAHAAAAAAAAAAUAAAAHAAAAAAAAAAQAAAAHAAAAAAAAAAMAAAAHAAAAAAAAAAIAAAAHAAAAAAAAAAEAAAAHAAAAAAAKABUAAAAHAAAAAAAJABUAAAAHAAAAAAAIABUAAAAHAAAAAAAHABUAAAAHAAAAAAAGABUAAAAHAAAAAAAFABUAAAAHAAAAAAAEABUAAAAHAAAAAAADABUAAAAHAAAAAAACABUAAAAHAAAAAAABABUAAAAHAAAAAAALAAsAAAAHAAAAAAALAAwAAAAHAAAAAAALAA0AAAAHAAAAAAALAA4AAAAHAAAAAAALAA8AAAAHAAAAAAALABAAAAAHAAAAAAALABEAAAAHAAAAAAALABIAAAAHAAAAAAALABMAAAAHAAAAAAALABQAAAAHAAAAAAALAAEAAAAHAAAAAAALAAIAAAAHAAAAAAALAAMAAAAHAAAAAAALAAQAAAAHAAAAAAALAAUAAAAHAAAAAAALAAYAAAAHAAAAAAALAAcAAAAHAAAAAAALAAgAAAAHAAAAAAALAAkAAAAHAAAAAAALAAoAAAAHAAAAAAA=")
+tile_set = SubResource("TileSet_sgp6g")
+rendering_quadrant_size = 32
+navigation_enabled = false
+
+[node name="Piece" type="TileMapLayer" parent="Tiles"]
+use_parent_material = true
+tile_set = SubResource("TileSet_sgp6g")
+navigation_enabled = false
+
+[node name="Ghost" type="TileMapLayer" parent="Tiles"]
+self_modulate = Color(1, 1, 1, 0.43137255)
+tile_set = SubResource("TileSet_w8frs")
+navigation_enabled = false
+
+[node name="GridVisualizer" type="Node2D" parent="Tiles"]
+z_index = -1
+script = ExtResource("2_ppgk2")
+
+[node name="StaticTiles" type="Node" parent="."]
+
+[node name="NextPiece" type="TileMapLayer" parent="StaticTiles"]
+position = Vector2(751, 177)
+tile_set = SubResource("TileSet_ppgk2")
+
+[node name="HUD" parent="." instance=ExtResource("3_ppgk2")]
+
+[node name="MaxScoreLabel" parent="HUD" index="6"]
+text = "Top Score: 0"
+
+[node name="LockTimer" type="Timer" parent="."]
+wait_time = 0.6
+one_shot = true
+
+[editable path="HUD"]

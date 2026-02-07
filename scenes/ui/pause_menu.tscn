@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://tvqi8lwddgc6"]
+
+[ext_resource type="Script" uid="uid://bi7vp02up3ngf" path="res://scripts/ui/pause_menu.gd" id="1_6tw0m"]
+
+[sub_resource type="Theme" id="Theme_uahpa"]
+default_font_size = 35
+
+[node name="PauseMenu" type="Panel" unique_id=2964288]
+offset_right = 254.0
+offset_bottom = 364.0
+theme = SubResource("Theme_uahpa")
+script = ExtResource("1_6tw0m")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=108936324]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -69.0
+offset_right = 48.0
+offset_bottom = 69.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 15
+
+[node name="ContinueButton" type="Button" parent="VBoxContainer" unique_id=1799886001]
+layout_mode = 2
+text = "Continue"
+
+[node name="SettingsButton" type="Button" parent="VBoxContainer" unique_id=772760263]
+layout_mode = 2
+text = "Settings"
+
+[node name="ExitButton" type="Button" parent="VBoxContainer" unique_id=1328492807]
+layout_mode = 2
+text = "Exit"

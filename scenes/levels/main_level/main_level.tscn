@@ -1,0 +1,108 @@
+[gd_scene format=4 uid="uid://coqefiv8pudlx"]
+
+[ext_resource type="Script" uid="uid://d2vpt38k82c01" path="res://scenes/levels/main_level/main_level.gd" id="1_i3b7r"]
+[ext_resource type="Script" uid="uid://ecslftmfdirt" path="res://scripts/data/effects_settings.gd" id="2_epd1c"]
+[ext_resource type="Script" uid="uid://cir12tyu47mqo" path="res://scenes/levels/main_level/field.gd" id="3_epd1c"]
+[ext_resource type="Texture2D" uid="uid://bi3b0kglptqii" path="res://assets/sprites/tile_set.png" id="3_tjw0f"]
+[ext_resource type="PackedScene" uid="uid://bp6gddu3o7ksx" path="res://scenes/ui/ui.tscn" id="4_q4xqf"]
+
+[sub_resource type="Resource" id="Resource_klq6b"]
+script = ExtResource("2_epd1c")
+lock_intensity = 5.0
+cb_intensity = 20.0
+cb_start_duration = 0.05
+cb_end_duration = 0.5
+lean_amount = 4.0
+lean_return_duration = 0.1
+metadata/_custom_type_script = "uid://ecslftmfdirt"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0wfyh"]
+texture = ExtResource("3_tjw0f")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_sgp6g"]
+tile_offset_axis = 1
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_0wfyh")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ppgk2"]
+texture = ExtResource("3_tjw0f")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_2r41h"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_ppgk2")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_klq6b"]
+texture = ExtResource("3_tjw0f")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_b121j"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_klq6b")
+
+[node name="MainLevel" type="Node2D" unique_id=1319015607]
+script = ExtResource("1_i3b7r")
+effect_settings = SubResource("Resource_klq6b")
+
+[node name="Field" type="Node2D" parent="." unique_id=507284042]
+position = Vector2(750, 177)
+script = ExtResource("3_epd1c")
+
+[node name="Board" type="TileMapLayer" parent="Field" unique_id=1441944405]
+use_parent_material = true
+tile_map_data = PackedByteArray("AAALABUAAAAHAAAAAAAAABUAAAAHAAAAAAAAAAAAAAAHAAAAAAALAAAAAAAHAAAAAAABAAAAAAAHAAAAAAACAAAAAAAHAAAAAAADAAAAAAAHAAAAAAAEAAAAAAAHAAAAAAAFAAAAAAAHAAAAAAAGAAAAAAAHAAAAAAAHAAAAAAAHAAAAAAAIAAAAAAAHAAAAAAAJAAAAAAAHAAAAAAAKAAAAAAAHAAAAAAAAABQAAAAHAAAAAAAAABMAAAAHAAAAAAAAABIAAAAHAAAAAAAAABEAAAAHAAAAAAAAABAAAAAHAAAAAAAAAA8AAAAHAAAAAAAAAA4AAAAHAAAAAAAAAA0AAAAHAAAAAAAAAAwAAAAHAAAAAAAAAAsAAAAHAAAAAAAAAAoAAAAHAAAAAAAAAAkAAAAHAAAAAAAAAAgAAAAHAAAAAAAAAAcAAAAHAAAAAAAAAAYAAAAHAAAAAAAAAAUAAAAHAAAAAAAAAAQAAAAHAAAAAAAAAAMAAAAHAAAAAAAAAAIAAAAHAAAAAAAAAAEAAAAHAAAAAAAKABUAAAAHAAAAAAAJABUAAAAHAAAAAAAIABUAAAAHAAAAAAAHABUAAAAHAAAAAAAGABUAAAAHAAAAAAAFABUAAAAHAAAAAAAEABUAAAAHAAAAAAADABUAAAAHAAAAAAACABUAAAAHAAAAAAABABUAAAAHAAAAAAALAAsAAAAHAAAAAAALAAwAAAAHAAAAAAALAA0AAAAHAAAAAAALAA4AAAAHAAAAAAALAA8AAAAHAAAAAAALABAAAAAHAAAAAAALABEAAAAHAAAAAAALABIAAAAHAAAAAAALABMAAAAHAAAAAAALABQAAAAHAAAAAAALAAEAAAAHAAAAAAALAAIAAAAHAAAAAAALAAMAAAAHAAAAAAALAAQAAAAHAAAAAAALAAUAAAAHAAAAAAALAAYAAAAHAAAAAAALAAcAAAAHAAAAAAALAAgAAAAHAAAAAAALAAkAAAAHAAAAAAALAAoAAAAHAAAAAAA=")
+tile_set = SubResource("TileSet_sgp6g")
+rendering_quadrant_size = 32
+collision_enabled = false
+navigation_enabled = false
+
+[node name="Piece" type="TileMapLayer" parent="Field" unique_id=16082474]
+use_parent_material = true
+tile_set = SubResource("TileSet_2r41h")
+collision_enabled = false
+navigation_enabled = false
+
+[node name="LockTimer" type="Timer" parent="Field/Piece" unique_id=780995161]
+wait_time = 0.55
+one_shot = true
+
+[node name="Ghost" type="TileMapLayer" parent="Field" unique_id=930206624]
+self_modulate = Color(1, 1, 1, 0.43137255)
+tile_set = SubResource("TileSet_b121j")
+collision_enabled = false
+navigation_enabled = false
+
+[node name="MainHUD" type="CanvasLayer" parent="." unique_id=1436655123]
+follow_viewport_enabled = true
+
+[node name="UI" parent="MainHUD" unique_id=314055144 instance=ExtResource("4_q4xqf")]
+offset_left = 1.0
+offset_right = 1.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=758742148]
+anchor_mode = 0
