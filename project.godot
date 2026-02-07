@@ -8,16 +8,20 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="multi-level tetris"
-run/main_scene="uid://coqefiv8pudlx"
-config/features=PackedStringArray("4.5", "Forward Plus")
+run/main_scene="uid://3c2slnjdbydd"
+config/features=PackedStringArray("4.6", "Forward Plus")
 
 [autoload]
 
-SaveSystem="*res://scripts/core/save_system.gd"
-SignalBus="*res://scripts/core/signal_bus.gd"
+SaveSystem="*res://scripts/core/autoload/save_system.gd"
+SignalBus="*res://scripts/core/autoload/signal_bus.gd"
 
 [debug]
 
@@ -25,8 +29,8 @@ gdscript/warnings/untyped_declaration=1
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1080
+window/size/borderless=true
+window/stretch/scale_mode="integer"
 
 [input]
 
@@ -101,7 +105,21 @@ space={
 ]
 }
 
+[physics]
+
+2d/physics_engine="GodotPhysics2D"
+2d/stretch/mode="disabled"
+2d/stretch/aspect="keep"
+2d/size/viewport_height=1080
+2d/size/viewport_width=1920
+2d/size/borderless=false
+2d/size/mode=0
+2d/size/initial_position_type=1
+
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

@@ -1,0 +1,118 @@
+[gd_scene format=3 uid="uid://bp6gddu3o7ksx"]
+
+[ext_resource type="Script" uid="uid://cbnyqwdfot3fx" path="res://scripts/ui/ui.gd" id="1_nt7q6"]
+[ext_resource type="Theme" uid="uid://cspox3og4es8q" path="res://assets/theme/stats_theme.tres" id="2_x4jx1"]
+[ext_resource type="StyleBox" uid="uid://3goo15fqmaab" path="res://assets/theme/new_style_box_flat.tres" id="3_yev5y"]
+[ext_resource type="Texture2D" uid="uid://bi3b0kglptqii" path="res://assets/sprites/tile_set.png" id="4_gdt2y"]
+[ext_resource type="PackedScene" uid="uid://tvqi8lwddgc6" path="res://scenes/ui/pause_menu.tscn" id="5_0dwhk"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wm3ai"]
+texture = ExtResource("4_gdt2y")
+texture_region_size = Vector2i(32, 32)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_8dubc"]
+tile_size = Vector2i(32, 32)
+sources/0 = SubResource("TileSetAtlasSource_wm3ai")
+
+[node name="UI" type="Control" unique_id=314055144]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nt7q6")
+
+[node name="RightPanel" type="MarginContainer" parent="." unique_id=587433952]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -240.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RightPanel" unique_id=384676286]
+layout_mode = 2
+theme = ExtResource("2_x4jx1")
+theme_override_constants/separation = 10
+
+[node name="NextPieceBox" type="VBoxContainer" parent="RightPanel/VBoxContainer" unique_id=72400729]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = ExtResource("2_x4jx1")
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="Text" type="Label" parent="RightPanel/VBoxContainer/NextPieceBox" unique_id=1122611668]
+layout_mode = 2
+text = "Next Piece"
+horizontal_alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="RightPanel/VBoxContainer/NextPieceBox" unique_id=1913373177]
+clip_contents = true
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = ExtResource("3_yev5y")
+
+[node name="NextPiece" type="TileMapLayer" parent="RightPanel/VBoxContainer/NextPieceBox/PanelContainer" unique_id=63578209]
+z_index = 2
+position = Vector2(6, 6)
+tile_set = SubResource("TileSet_8dubc")
+collision_enabled = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="RightPanel/VBoxContainer" unique_id=1902844473]
+layout_mode = 2
+
+[node name="MaxScore" type="Label" parent="RightPanel/VBoxContainer/VBoxContainer" unique_id=1079146890]
+layout_mode = 2
+text = "Max Score: 0"
+horizontal_alignment = 1
+
+[node name="Score" type="Label" parent="RightPanel/VBoxContainer/VBoxContainer" unique_id=347101952]
+layout_mode = 2
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="NewGame" type="Button" parent="RightPanel/VBoxContainer" unique_id=724492858]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 22
+text = "New Game"
+
+[node name="CenterPanel" type="CenterContainer" parent="." unique_id=1453574459]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="GameOver" type="Label" parent="CenterPanel" unique_id=1863241152]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.44, 0.44, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 45
+text = "Game Over!"
+
+[node name="PauseMenu" parent="." unique_id=2964288 instance=ExtResource("5_0dwhk")]
+visible = false
+layout_mode = 1
+offset_right = 220.0
+offset_bottom = 350.0
