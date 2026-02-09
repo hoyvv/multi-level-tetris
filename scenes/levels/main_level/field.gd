@@ -3,11 +3,15 @@ extends Node2D
 @export var line_color: Color = Color(1, 1, 1, 0.2)
 @export var line_width: float = 1.0
 
+var initial_position: Vector2 = Vector2.ZERO
+
 signal position_changed(position: Vector2)
 
 func _ready() -> void:
     _update_field_transform()
+
     get_viewport().size_changed.connect(_update_field_transform, CONNECT_DEFERRED)
+    
 
 func _update_field_transform() -> void:
     var full_board_size: Vector2 = Vector2(
@@ -24,6 +28,7 @@ func _update_field_transform() -> void:
     position = (screen_size / 2.0) - (new_size / 2.0)
 
     position_changed.emit(position)
+    initial_position = position
  
 func _draw() -> void:
     _draw_grid()

@@ -21,8 +21,7 @@ var score: int = 0:
 		if max_score < value:
 			max_score = value
 			ui.set_max_score(value)
-		ui.set_score(value)
-		
+		ui.set_score(value)		
 var max_score: int = 0
 
 var shape_provider: ShapeProvider = ShapeProvider.new()
@@ -37,9 +36,12 @@ func _ready() -> void:
 	_load_state()
 
 	_initialize_core()
+	_initialize_bridge()
+
 	board.line_cleared.connect(_on_line_cleared)
 	board.spawn_next_piece.connect(_on_spawn_next_piece) 
 	SignalBus.new_game.connect(_on_create_new_game)
+
 	_create_new_game()
 	
 func _physics_process(_delta: float) -> void:
@@ -64,7 +66,7 @@ func _initialize_core() -> void:
 	board = Board.new(board_tilelayer)
 
 func _initialize_bridge() -> void:
-	visual_bridge = VisualBridge.new(board, current_piece, effect_settings, field)
+	visual_bridge = VisualBridge.new(board, field, effect_settings)
 
 func _update_movement_steps() -> void:
 	if Input.is_action_pressed("left"):
@@ -107,10 +109,12 @@ func _next_piece() -> void:
 
 func _create_new_game() -> void:
 	_setup_pieces()
+	visual_bridge.setup_piece(current_piece)
+	
 	_reset_variable()
 	_reset_display()
+	
 
-	_initialize_bridge()
 	_draw_piece()
 	
 func _setup_pieces() -> void:
@@ -135,10 +139,12 @@ func _reset_variable() -> void:
 	lock_timer.stop()
 
 func _reset_display() -> void:
+	field.position = field.initial_position
 	piece_tilelayer.clear()
 	next_piece_tilelayer.clear()
 	ghost_tilelayer.clear()
 	board.clear()
+	visual_bridge.reset_effects()
 
 	ui.game_over_label.hide()
 
