@@ -1,8 +1,6 @@
 extends RefCounted
 class_name ShapeProvider
 
-var _available_types: Array[Array] = ShapesData.SHAPES_LIST
-
 var _bag: Array[Array] = []
 
 func get_rangom_piece_data() -> Dictionary[String, Variant]:
@@ -14,13 +12,14 @@ func get_rangom_piece_data() -> Dictionary[String, Variant]:
 
 func _get_next_shape() -> Array[Vector2i]:
 	if _bag.is_empty():
-		_bag = _available_types.duplicate()
+		_bag = ShapesData.SHAPES_LIST.duplicate()
 	
 	_bag.shuffle()
+
 	return _bag.pop_back()
 
 func get_atlas_for(shape: Array) -> Vector2i:
-	var index: int = _available_types.find(shape)
+	var index: int = ShapesData.SHAPES_LIST.find(shape)
 	if index == -1:
 		return Vector2i.ZERO
 	

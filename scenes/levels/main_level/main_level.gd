@@ -56,6 +56,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if Input.is_action_just_pressed("space"):
 		current_piece.move_piece_to(current_piece.ghost_position, board)
+		visual_bridge.fast_reset_visual_lock()
 		return
 
 	if  Input.is_action_just_pressed("up"):
@@ -109,11 +110,8 @@ func _next_piece() -> void:
 
 func _create_new_game() -> void:
 	_setup_pieces()
-	visual_bridge.setup_piece(current_piece)
-	
 	_reset_variable()
 	_reset_display()
-	
 
 	_draw_piece()
 	
@@ -125,14 +123,13 @@ func _setup_pieces() -> void:
 	next_piece.set_data(shape_provider.get_rangom_piece_data())
 
 	current_piece.landing_requested.connect(board.process_landing)
+	visual_bridge.setup_piece(current_piece)
 
 func _reset_piece() -> void:
 	current_piece.position = GameConstant.START_POSITION
 	current_piece.lock_moves_count = 0
 	game_steps = Vector3.ZERO
-	lock_timer.stop()
-	piece_tilelayer.modulate.a = 1
-	
+
 func _reset_variable() -> void:
 	game_running = true
 	game_speed = 0.6
@@ -184,14 +181,7 @@ func _is_game_over() -> bool:
 	return not TileValidator.can_fit_at(next_piece.cells, GameConstant.START_POSITION, board_tilelayer)
 
 func _calculate_score(lines: int, multiplier: int = 1) -> int:
-	var result: int = 0
-	match lines:
-		1: result = GameConstant.REWARD
-		2: result = GameConstant.REWARD * 3
-		3: result = GameConstant.REWARD * 6
-		4: result =	GameConstant.REWARD * 8
-	
-	return result * multiplier
+	return GameConstant.LINE_CLEAR_SCORE[lines] * multiplier
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:

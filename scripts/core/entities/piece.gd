@@ -70,7 +70,7 @@ func move_piece_to(target_position: Vector2i, board: Board) -> void:
 
 	landing_requested.emit(self)
 	lock_timer.stop()
-	
+
 func rotate(board_tilelayer: TileMapLayer) -> void:
 	if lock_moves_count >= _MAX_LOCK_MOVES:
 		return

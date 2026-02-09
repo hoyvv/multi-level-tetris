@@ -13,7 +13,6 @@ func _init(board: Board, field: Node2D, effect_settings: EffectSettings, ) -> vo
 	_visual_effects = VisualEffects.new(effect_settings)
 
 	board.line_cleared.connect(_on_line_clear)
-
 func setup_piece(new_piece: Piece) -> void:
 	_piece = new_piece
 	
@@ -26,14 +25,17 @@ func setup_piece(new_piece: Piece) -> void:
 func reset_effects() -> void:
 	_visual_effects._last_lean_shift = 0
 	_last_lean_dir_x = 0
-	_visual_effects.reset_piece_visula_lock(_field, _piece.tilelayer)
+	_visual_effects.fast_reset_visual_lock(_piece.tilelayer)
 	_visual_effects.return_field(_field)
+
+func fast_reset_visual_lock() -> void:
+	_visual_effects.fast_reset_visual_lock(_piece.tilelayer)
 
 func _on_line_clear(multiplier: int) -> void:
 	_visual_effects.line_clear(_field, multiplier, true)
 
 func _on_piece_lock_timer_stopped() -> void:
-	_visual_effects.reset_piece_visula_lock(_field, _piece.tilelayer)
+	_visual_effects.reset_piece_visual_lock(_field, _piece.tilelayer)
 
 func _on_piece_lock_timer_started() -> void:
 	_visual_effects.set_piece_visual_lock(_field, _piece.tilelayer, _piece.lock_timer.wait_time)
