@@ -44,20 +44,18 @@ func check_wall_hit(board_tilelayer: TileMapLayer, direction: Vector2) -> void:
 	wall_hit.emit(0)
 
 func redraw() -> void:
-	clear()
-	draw()
+	tilelayer.clear()
+	TileRenderer.draw_cells(cells, position, atlas_id, atlas, tilelayer)
 	
 func draw() -> void:
 	TileRenderer.draw_cells(cells, position, atlas_id, atlas, tilelayer)
 
 func clear() -> void:
-	TileRenderer.clear_cells(cells, position, tilelayer)
+	tilelayer.clear()
 
 func move(direction: Vector2i, board_tilelayer: TileMapLayer) -> void:
 	if TileValidator.can_move(cells, direction, position, board_tilelayer):
 		_update_piece_position_in_direction(direction)
-	else:
-		wall_hit.emit(direction.x)
 
 	_check_lock(board_tilelayer)
 	update_ghost(_ghost_tilelayer, board_tilelayer)
@@ -69,9 +67,10 @@ func move_piece_to(target_position: Vector2i, board: Board) -> void:
 	TileRenderer.clear_cells(cells, position, tilelayer)
 	position = target_position
 	TileRenderer.draw_cells(cells, position, atlas_id, atlas, tilelayer)
-	
-	landing_requested.emit(self)
 
+	landing_requested.emit(self)
+	lock_timer.stop()
+	
 func rotate(board_tilelayer: TileMapLayer) -> void:
 	if lock_moves_count >= _MAX_LOCK_MOVES:
 		return
@@ -109,13 +108,13 @@ func update_ghost(ghost_tilelayer: TileMapLayer, board_tilelayer: TileMapLayer =
 func set_data(new_data: Dictionary[String, Variant]) -> void:
 	cells = new_data["shape"]
 	atlas = new_data["atlas"]
-	size = calculate_size()
+	size = _calculate_size()
 
-func calculate_size() -> int:
+func _calculate_size() -> int:
 	var result: int = 0
 
 	for cell: Vector2i in cells:
-		result = max(result, max(cell.x, cell.y))
+		result = max(result, cell.x, cell.y)
 
 	return result
 
@@ -138,7 +137,6 @@ func _check_lock(board_tilelayer: TileMapLayer) -> void:
 	if is_on_floor and lock_timer.is_stopped():
 		lock_timer.start()
 		lock_timer_started.emit()
-	
+
 func _on_lock_timer_timeout() -> void:
 	landing_requested.emit(self)
-

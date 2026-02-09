@@ -15,7 +15,6 @@ static func set_config_dict(data: Dictionary) -> ConfigFile:
 	for section_key: String in data.keys():
 		for key: String in data[section_key].keys():
 			config.set_value(section_key, key, data[section_key][key])
-			print(section_key, " ", key)
 	
 	return config
 

@@ -15,14 +15,8 @@ func _init(board: Board, field: Node2D, effect_settings: EffectSettings, ) -> vo
 	board.line_cleared.connect(_on_line_clear)
 
 func setup_piece(new_piece: Piece) -> void:
-	if _piece and is_instance_valid(_piece):
-		_piece.lock_timer_started.disconnect(_on_piece_lock_timer_started)
-		_piece.lock_timer_stopped.disconnect(_on_piece_lock_timer_stopped)
-		_piece.landing_requested.disconnect(_on_piece_landing_requested)
-		_piece.wall_hit.disconnect(_on_piece_wall_hit)
-
 	_piece = new_piece
-
+	
 	if _piece:
 		_piece.lock_timer_started.connect(_on_piece_lock_timer_started)
 		_piece.lock_timer_stopped.connect(_on_piece_lock_timer_stopped)
@@ -43,7 +37,7 @@ func _on_piece_lock_timer_stopped() -> void:
 
 func _on_piece_lock_timer_started() -> void:
 	_visual_effects.set_piece_visual_lock(_field, _piece.tilelayer, _piece.lock_timer.wait_time)
-
+	
 func _on_piece_landing_requested(_p: Piece) -> void:
 	_visual_effects.lock(_field)
 

@@ -54,7 +54,6 @@ func return_field(field: Node2D) -> void:
 	.as_relative()\
 	.set_trans(Tween.TRANS_BACK)\
 	.set_ease(Tween.EASE_OUT)
-	print(_last_lean_shift)
 
 func _shake_node(node: Node2D, intensity: float, start_duration: float, end_duration: float, priority: bool = false , ) -> void:
 	if _current_impact_priority and not priority:

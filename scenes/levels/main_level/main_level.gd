@@ -130,6 +130,8 @@ func _reset_piece() -> void:
 	current_piece.position = GameConstant.START_POSITION
 	current_piece.lock_moves_count = 0
 	game_steps = Vector3.ZERO
+	lock_timer.stop()
+	piece_tilelayer.modulate.a = 1
 	
 func _reset_variable() -> void:
 	game_running = true
@@ -179,9 +181,7 @@ func _on_create_new_game() -> void:
 	_create_new_game()
 
 func _is_game_over() -> bool:
-	if TileValidator.can_fit_at(next_piece.cells, GameConstant.START_POSITION, board_tilelayer):
-		return false
-	return true
+	return not TileValidator.can_fit_at(next_piece.cells, GameConstant.START_POSITION, board_tilelayer)
 
 func _calculate_score(lines: int, multiplier: int = 1) -> int:
 	var result: int = 0
