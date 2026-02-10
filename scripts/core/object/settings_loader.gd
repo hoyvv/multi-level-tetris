@@ -7,7 +7,7 @@ var config: ConfigFile:
 			set_default_settings()
 		else:
 			load_settings()
-		print(config)
+
 		return config
 
 func load_settings() -> void:

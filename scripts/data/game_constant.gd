@@ -18,6 +18,11 @@ const STEPS_REQ: int = 45
 const DIRECTIONS : PackedVector2Array = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.DOWN]
 const ACCEL : float = 0.15
 
-const REWARD: int = 100
+const LINE_CLEAR_SCORE: Dictionary[int, int] = {
+	1: 100,
+	2: 300,
+	3: 600,
+	4: 800
+}
 
 

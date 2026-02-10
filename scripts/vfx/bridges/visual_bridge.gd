@@ -8,26 +8,38 @@ var _field: Node2D
 
 var _last_lean_dir_x: int = 0
 
-func _init(board: Board, piece: Piece, effect_settings: EffectSettings, field: Node2D) -> void:
-	board.line_cleared.connect(_on_line_clear)
-	_piece = piece
+func _init(board: Board, field: Node2D, effect_settings: EffectSettings, ) -> void:
 	_field = field
 	_visual_effects = VisualEffects.new(effect_settings)
 
-	_piece.lock_timer_started.connect(_on_piece_lock_timer_started)
-	_piece.lock_timer_stopped.connect(_on_piece_lock_timer_stopped)
-	_piece.landing_requested.connect(_on_piece_landing_requested)
-	_piece.wall_hit.connect(_on_piece_wall_hit)
+	board.line_cleared.connect(_on_line_clear)
+func setup_piece(new_piece: Piece) -> void:
+	_piece = new_piece
+	
+	if _piece:
+		_piece.lock_timer_started.connect(_on_piece_lock_timer_started)
+		_piece.lock_timer_stopped.connect(_on_piece_lock_timer_stopped)
+		_piece.landing_requested.connect(_on_piece_landing_requested)
+		_piece.wall_hit.connect(_on_piece_wall_hit)
+
+func reset_effects() -> void:
+	_visual_effects._last_lean_shift = 0
+	_last_lean_dir_x = 0
+	_visual_effects.fast_reset_visual_lock(_piece.tilelayer)
+	_visual_effects.return_field(_field)
+
+func fast_reset_visual_lock() -> void:
+	_visual_effects.fast_reset_visual_lock(_piece.tilelayer)
 
 func _on_line_clear(multiplier: int) -> void:
 	_visual_effects.line_clear(_field, multiplier, true)
 
 func _on_piece_lock_timer_stopped() -> void:
-	_visual_effects.reset_piece_visula_lock(_field, _piece.tilelayer)
+	_visual_effects.reset_piece_visual_lock(_field, _piece.tilelayer)
 
 func _on_piece_lock_timer_started() -> void:
 	_visual_effects.set_piece_visual_lock(_field, _piece.tilelayer, _piece.lock_timer.wait_time)
-
+	
 func _on_piece_landing_requested(_p: Piece) -> void:
 	_visual_effects.lock(_field)
 
